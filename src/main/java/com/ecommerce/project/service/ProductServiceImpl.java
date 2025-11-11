@@ -80,9 +80,9 @@ public class ProductServiceImpl implements ProductService {
 
         List<Product> products = productPage.getContent();
 
-        if (products.isEmpty()) {
-            throw new APIException("There is no products");
-        }
+//        if (products.isEmpty()) {
+//            throw new APIException("There is no products");
+//        }
 
         List<ProductDTO> productDTOS = products.stream().map(product -> modelMapper.map(product, ProductDTO.class)).collect(Collectors.toList());
         ProductResponse productResponse = new ProductResponse();
