@@ -9,9 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Table(name = "addresses")
 @Data
@@ -44,14 +41,15 @@ public class Address {
     private String country;
 
     @NotBlank
-    @Size(min = 6, message = "Pincode name Must be at least 6 characters")
-    private Integer pincode;
+    @Size(min = 5, message = "Pincode name Must be at least 6 characters")
+    private String pincode;
 
     @ToString.Exclude
-    @ManyToMany(mappedBy = "addresses")
-    private List<User> users = new ArrayList<>();
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    public Address(Long addressId, String street, String buildingName, String city, String state, String country, Integer pincode) {
+    public Address(Long addressId, String street, String buildingName, String city, String state, String country, String pincode) {
         this.addressId = addressId;
         this.street = street;
         this.buildingName = buildingName;
