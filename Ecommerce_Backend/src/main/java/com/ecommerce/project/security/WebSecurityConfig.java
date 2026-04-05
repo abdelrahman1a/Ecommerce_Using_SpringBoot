@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -25,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Configuration
@@ -75,10 +77,15 @@ public class WebSecurityConfig {
                         auth -> auth.requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/seller/**").hasAnyRole("ADMIN", "SELLER")
+
                                 //.requestMatchers("/api/admin/**").permitAll()
                                 .requestMatchers("/api/public/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Add this line
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/api/test/**").permitAll()
+
                                 .requestMatchers("/images/**").permitAll()
                                 .anyRequest().authenticated());
 
@@ -113,42 +120,30 @@ public class WebSecurityConfig {
                         return roleRepository.save(newAdminRole);
                     });
 
-            Set<Role> userRoles = Set.of(userRole);
-            Set<Role> sellerRoles = Set.of(sellerRole);
-            Set<Role> adminRoles = Set.of(userRole, sellerRole, adminRole);
-
-
-            // Create users if not already present
-            if (!userRepository.existsByUserName("user1")) {
-                User user1 = new User("user1", passwordEncoder.encode("password1"), "user1@example.com");
-                userRepository.save(user1);
-            }
-
-            if (!userRepository.existsByUserName("seller1")) {
-                User seller1 = new User("seller1", passwordEncoder.encode("password2"), "seller1@example.com");
-                userRepository.save(seller1);
-            }
+            Set<Role> userRoles = new HashSet<>(Set.of(userRole));
+            Set<Role> sellerRoles = new HashSet<>(Set.of(sellerRole));
+            Set<Role> adminRoles = new HashSet<>(Set.of(userRole, sellerRole, adminRole));
 
             if (!userRepository.existsByUserName("admin")) {
                 User admin = new User("admin", passwordEncoder.encode("adminPass"), "admin@example.com");
+
+                admin.getRoles().addAll(adminRoles);
+
                 userRepository.save(admin);
             }
 
-            // Update roles for existing users
-            userRepository.findByUserName("user1").ifPresent(user -> {
-                user.setRoles(userRoles);
-                userRepository.save(user);
-            });
+            // Create users if not already present and update roles
+            if (!userRepository.existsByUserName("user1")) {
+                User user1 = new User("user1", passwordEncoder.encode("password1"), "user1@example.com");
+                user1.getRoles().addAll(adminRoles);
+                userRepository.save(user1);
+            }
+            if (!userRepository.existsByUserName("seller1")) {
+                User seller1 = new User("seller1", passwordEncoder.encode("password2"), "seller1@example.com");
+                seller1.getRoles().addAll(sellerRoles);
+                userRepository.save(seller1);
+            }
 
-            userRepository.findByUserName("seller1").ifPresent(seller -> {
-                seller.setRoles(sellerRoles);
-                userRepository.save(seller);
-            });
-
-            userRepository.findByUserName("admin").ifPresent(admin -> {
-                admin.setRoles(adminRoles);
-                userRepository.save(admin);
-            });
         };
     }
 

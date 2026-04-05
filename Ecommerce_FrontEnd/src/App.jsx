@@ -11,6 +11,13 @@ import LogIn from "./components/auth/Login";
 import PrivateRoute from "./components/PrivateRoute";
 import Register from "./components/auth/Register";
 import Checkout from "./components/checkout/CheckOut";
+import PaymentConfirmation from "./components/checkout/PaymentConfirmation";
+import AdminLayout from "./components/admin/AdminLayout";
+import Dashboard from "./components/admin/dashboard/Dashboard";
+import AdminProducts from "./components/admin/products/AdminProducts";
+import Sellers from "./components/admin/sellers/Sellers";
+import Orders from "./components/admin/orders/Orders";
+import Categories from "./components/admin/categories/Category";
 function App() {
   return (
     <>
@@ -25,10 +32,20 @@ function App() {
 
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-confirm" element={<PaymentConfirmation />} />
           </Route>
           <Route path="/" element={<PrivateRoute publicPage />}>
             <Route path="/login" element={<LogIn />} />
             <Route path="/register" element={<Register />} />
+          </Route>
+          <Route path="/" element={<PrivateRoute adminOnly />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="" element={<Dashboard />} />
+              <Route path="categories" element={<Categories />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="sellers" element={<Sellers />} />
+              <Route path="orders" element={<Orders />} />
+            </Route>
           </Route>
         </Routes>
       </Router>

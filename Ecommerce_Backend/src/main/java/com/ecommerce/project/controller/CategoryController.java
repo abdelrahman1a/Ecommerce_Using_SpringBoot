@@ -43,7 +43,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "400", description = "Invalid Input"),
             @ApiResponse(responseCode = "500", description = "Internal Server error")
     })
-    @PostMapping("/public/categories")
+    @PostMapping("/admin/categories")
     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDto) {
         CategoryDTO savedCategoryDto = categoryService.createCategory(categoryDto);
         return new ResponseEntity<>(savedCategoryDto, HttpStatus.CREATED);
