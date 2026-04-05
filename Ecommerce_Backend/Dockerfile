@@ -1,39 +1,3 @@
-## ============================================
-## Build Stage - Using same Maven as local
-## ============================================
-#FROM maven:3.9-eclipse-temurin-17 AS build
-#
-#WORKDIR /app
-#
-## Copy Maven wrapper (if you have it)
-#COPY mvnw* .
-#COPY .mvn .mvn
-#
-## Copy pom.xml
-#COPY pom.xml .
-#
-## Download dependencies
-#RUN mvn dependency:resolve dependency:resolve-plugins
-#
-## Copy source code
-#COPY src ./src
-#
-## Build the application
-#RUN mvn clean package -DskipTests
-#
-## ============================================
-## Runtime Stage
-## ============================================
-#FROM eclipse-temurin:17-jre-alpine
-#
-#WORKDIR /app
-#
-## Copy JAR from build stage
-#COPY --from=build /app/target/*.jar app.jar
-#
-#EXPOSE 8080
-#
-#ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # ============================================
 # Build Stage - USING JAVA 21
